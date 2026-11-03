@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#152b48">
+  <meta name="description" content="حاسبة تفاعلية لاستثمار عقاري مشترك بين أربعة شركاء: التمويل، الدفعات، الادخار، الإيجار، سيناريوهات البيع والتدفقات الشهرية.">
+  <title>حاسبة الاستثمار العقاري | أربعة شركاء</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div class="eyebrow">دراسة استثمار عقاري • أبوظبي</div>
+      <h1>حاسبة الاستثمار العقاري للأربعة</h1>
+      <p>عقار تحت الإنشاء، استلام متوقع في 2028. احسب مساهمة كل شريك، ودفعات المطور، والقرض العقاري بحد أقصى 7 سنوات، والإيجارات والأرباح المحتملة.</p>
+      <div class="toolbar no-print">
+        <button id="printBtn" type="button">طباعة / حفظ PDF</button>
+        <button id="exportBtn" type="button" class="secondary">تصدير جدول CSV</button>
+        <button id="saveBtn" type="button" class="secondary">حفظ البيانات بالجهاز</button>
+        <button id="resetBtn" type="button" class="ghost">إعادة الضبط</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+    </header>
+
+    <section class="panel" aria-labelledby="propertyHead">
+      <div class="section-heading"><span class="num">01</span><h2 id="propertyHead">العقار والتمويل</h2></div>
+      <div class="fields">
+        <label>سعر الشقة (درهم)<input id="price" type="number" min="1" value="950000" step="1000"></label>
+        <label>دفعات المطور قبل الاستلام، إجمالاً<input id="pre" type="number" min="0" value="196000" step="1000"></label>
+        <label>إجمالي رسوم الشراء والتمويل التقديرية<input id="fees" type="number" min="0" value="35000" step="1000"></label>
+        <label>نسبة الرهن المتوقعة من سعر العقار %<input id="ltv" type="number" min="0" max="100" value="65" step="1"></label>
+        <label>نسبة فائدة الرهن السنوية %<input id="rate" type="number" min="0" max="30" value="5" step="0.25"></label>
+        <label>مدة الرهن — 7 سنوات حد أقصى<select id="term"><option value="4">4 سنوات</option><option value="5">5 سنوات</option><option value="6">6 سنوات</option><option value="7" selected>7 سنوات</option></select></label>
+        <label>تاريخ الاستلام<input id="handover" type="month" value="2028-01"></label>
+        <label>تاريخ البيع المتوقع<input id="saleDate" type="month" value="2035-12"></label>
+        <label>سعر البيع المتوقع (درهم)<input id="sale" type="number" min="0" value="1500000" step="10000"></label>
+        <label>رسوم البيع %<input id="salePercent" type="number" min="0" max="30" value="2" step="0.25"></label>
+        <label>رسوم البيع الثابتة (درهم)<input id="saleFixed" type="number" min="0" value="5000" step="500"></label>
+      </div>
+      <div class="note">الرهن بنسبة 65% مجرد افتراض قابل للتعديل، وليس عرضاً بنكياً أو موافقة. شروط التمويل تعتمد على أهلية الشركاء، وتقييم الوحدة وحالتها عند التمويل.</div>
+    </section>
+
+    <section class="panel" aria-labelledby="partnerHead">
+      <div class="section-heading"><span class="num">02</span><h2 id="partnerHead">الشركاء الأربعة</h2></div>
+      <p class="subtle">غيّر الاسم ونسبة الملكية والمدخرات الحالية ومبلغ الراتب المخصص شهرياً. يجب أن يكون مجموع الملكيات 100%.</p>
+      <div class="table-scroll"><table><thead><tr><th>الشريك</th><th>الاسم</th><th>الملكية %</th><th>مدخرات حالية (درهم)</th><th>مبلغ شهري من الراتب (درهم)</th></tr></thead><tbody id="partnerInputs"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="rentalHead">
+      <div class="section-heading"><span class="num">03</span><h2 id="rentalHead">الإيجار والتكاليف</h2></div>
+      <div class="fields">
+        <label>الإيجار السنوي عند التأجير<input id="rent" type="number" min="0" value="60000" step="1000"></label>
+        <label>الخدمات والمصاريف السنوية<input id="service" type="number" min="0" value="10000" step="500"></label>
+        <label>تأخر أول مستأجر بعد الاستلام (أشهر)<input id="rentDelay" type="number" min="0" max="240" value="0"></label>
+        <label>شغور كل سنة بعد أول تأجير (أشهر)<input id="vacancy" type="number" min="0" max="12" value="0"></label>
+      </div>
+      <p class="subtle">لا يتم احتساب أي إيجار قبل الاستلام. تأخر المستأجر والشغور يخصمان من الإيرادات، بينما تستمر الأقساط والخدمات.</p>
+    </section>
+
+    <section aria-labelledby="resultHead">
+      <div class="section-heading results-heading"><span class="num">04</span><h2 id="resultHead">نتيجة الخطة</h2></div>
+      <div id="stats" class="stats" aria-live="polite"></div>
+      <div id="alerts" class="alerts" role="status"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="fundHead">
+      <div class="section-heading"><span class="num">05</span><h2 id="fundHead">الدفعات قبل الاستلام وما يلزم توفيره</h2></div>
+      <div id="funding"></div>
+      <div class="table-scroll"><table><thead><tr><th>الشريك</th><th>نصيبه من ثمن العقار والرسوم نقداً</th><th>دفعات المطور</th><th>المطلوب عند الاستلام + الرسوم</th><th>المدخرات المتوقعة عند الاستلام*</th><th>أكبر عجز نقدي حتى الاستلام*</th></tr></thead><tbody id="partnerFunding"></tbody></table></div>
+      <p class="subtle">*المدخرات المتوقعة تحتسب من نوفمبر 2026: الرصيد الحالي + المبلغ الشهري المتاح − الدفعات المطلوبة في موعدها. يظهر العجز عند عدم كفاية السيولة في أي شهر، وليس فقط في يوم الاستلام.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="monthlyHead">
+      <div class="section-heading"><span class="num">06</span><h2 id="monthlyHead">كم يدفع كل شريك شهرياً؟</h2></div>
+      <div class="table-scroll"><table><thead><tr><th>الشريك</th><th>القسط العقاري الشهري</th><th>نصيبه من صافي الإيجار الشهري عند الإشغال*</th><th>من راتبه شهرياً عند الإشغال*</th><th>من راتبه إذا العقار فاضي</th><th>ما يتبقى من الميزانية الشهرية عند الإشغال</th><th>صافي ربحه المحتمل عند البيع</th></tr></thead><tbody id="partnerMonthly"></tbody></table></div>
+      <p class="subtle">*قيم شهر اعتيادي بعد الاستلام مع إيجار كامل. لا يوجد إيجار أثناء البناء. إذا كان صافي الإيجار أكبر من القسط، يظهر المبلغ الزائد كدخل موزع، وليس كمبلغ تدفعه من راتبك.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="scenarioHead">
+      <div class="section-heading"><span class="num">07</span><h2 id="scenarioHead">السيناريو الإيجابي والسلبي</h2></div>
+      <div class="fields">
+        <label>سعر البيع الإيجابي<input id="goodSale" type="number" min="0" value="1500000" step="10000"></label>
+        <label>الإيجار السنوي الإيجابي<input id="goodRent" type="number" min="0" value="70000" step="1000"></label>
+        <label>سعر البيع السلبي<input id="badSale" type="number" min="0" value="950000" step="10000"></label>
+        <label>تأخير التأجير السلبي (أشهر)<input id="badDelay" type="number" min="0" max="240" value="36"></label>
+        <label>الإيجار السنوي السلبي<input id="badRent" type="number" min="0" value="60000" step="1000"></label>
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>الحالة</th><th>مجموع الإيجارات</th><th>الفوائد حتى البيع</th><th>تكلفة الخدمات</th><th>الربح / الخسارة للأربعة</th><th>حصة شريك 25%</th></tr></thead><tbody id="scenarios"></tbody></table></div>
+      <p class="subtle">الربح = سعر البيع + الإيرادات المحصلة − سعر الشراء − الفوائد المدفوعة − رسوم الشراء والبيع − الخدمات. لا يخصم أصل الرهن مرتين. الأرباح اسمية وافتراضية وليست ضماناً.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="cashflowHead">
+      <div class="section-heading"><span class="num">08</span><h2 id="cashflowHead">التدفقات الشهرية حتى البيع</h2></div>
+      <p class="subtle">قيمة «الصافي المطلوب من الأربعة» تجمع دفعات المطور، والسيولة عند الاستلام، والقسط والخدمات، ثم تطرح الإيجار. القيمة السالبة تعني فائضاً موزعاً. اضغط «تصدير جدول CSV» للحصول على كل الشهور في Excel.</p>
+      <div class="table-scroll schedule"><table><thead><tr><th>الشهر</th><th>دفعة المطور</th><th>استكمال الدفعة المقدمة والرسوم</th><th>قسط الرهن</th><th>الإيجار</th><th>الخدمات</th><th>الصافي المطلوب من الأربعة</th><th>المتبقي من الرهن</th></tr></thead><tbody id="schedule"></tbody></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="personScheduleHead">
+      <div class="section-heading"><span class="num">09</span><h2 id="personScheduleHead">جدول كل شريك: من الراتب والادخار شهراً بشهر</h2></div>
+      <div class="fields"><label>اختر الشريك<select id="selectedPartner"><option value="0">الشريك الأول</option><option value="1">الشريك الثاني</option><option value="2">الشريك الثالث</option><option value="3">الشريك الرابع</option></select></label></div>
+      <p class="subtle">«من الراتب» هو الجزء المستخدم من ميزانيتك الشهرية لسداد المطلوب، و«المتبقي للادخار» = الميزانية الشهرية ناقص هذا الجزء. يتم تسديد أي فرق من المدخرات المتراكمة، ويظهر عجز إذا لم تكفِ. رصيد المدخرات يشمل أي فائض إيجاري محتفظ به ولا يشمل قيمة الشقة.</p>
+      <div class="table-scroll schedule"><table><thead><tr><th>الشهر</th><th>المطلوب من الشريك بعد الإيجار</th><th>المستخدم من الراتب</th><th>المتبقي للادخار من الراتب</th><th>المسحوب من المدخرات</th><th>رصيد المدخرات نهاية الشهر*</th></tr></thead><tbody id="personSchedule"></tbody></table></div>
+    </section>
+
+    <footer>هذه أداة تخطيط مالي وليست عرض تمويل أو نصيحة مالية معتمدة. تفترض فائدة سنوية ثابتة على الرصيد المتناقص، وعدم تغير الإيجار والأسعار، وعدم وجود مصاريف غير مدخلة أو رسوم سداد مبكر. راجعوا عقد المطور والبنك ومستشاراً مختصاً قبل الالتزام. جميع المدخلات محلية على جهازك ولا تُرفع إلى خادم.</footer>
+  </main>
+</body>
+</html>
